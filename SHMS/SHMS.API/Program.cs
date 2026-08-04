@@ -1,4 +1,4 @@
-﻿using shms_notification_service.Services;
+using shms_notification_service.Services;
 using shms_notification_service.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,15 +20,12 @@ builder.Services.AddSingleton<SmsService>();
 
 builder.Services.AddControllers();
 
-// ── CORS — allow Spring Boot to call this ─────────────────────────────
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
         policy
-            .WithOrigins(
-                "http://localhost:8080",
-                "http://localhost:3000")
+            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
