@@ -76,7 +76,7 @@ const ForgotPasswordPage = () => {
       if (res.data.success) {
         navigate("/login", {
           state: {
-            message: "Password reset successfully. " + "Please login.",
+            message: "Password reset successfully. Please login.",
           },
         });
       } else {

@@ -36,6 +36,7 @@ const BookAppointment = () => {
     if (specialty) {
       fetchDoctors();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchDoctors = async () => {

@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import DoctorAPI from "../../api/doctorAPI";
-import PatientAPI from "../../api/patientAPI";
 
 const PatientConsultation = () => {
   const { apptId } = useParams();
@@ -43,47 +42,33 @@ const PatientConsultation = () => {
   const [error, setError] = useState("");
   const [allergyWarnings, setAllergyWarnings] = useState([]);
 
-  useEffect(() => {
-    if (patientId) {
-      fetchPatientData();
-    }
-  }, [patientId]);
-
-  const fetchPatientData = async () => {
+  const fetchPatientData = useCallback(async () => {
     try {
-      const [allergyRes, historyRes, rxRes, labRes] = await Promise.allSettled([ //Promise.all
+      const [allergyRes, historyRes, rxRes, labRes] = await Promise.allSettled([
         DoctorAPI.getPatientAllergies(patientId),
         DoctorAPI.getPatientMedicalHistory(patientId),
         DoctorAPI.getPatientPrescriptions(patientId),
         DoctorAPI.getPatientLabReports(patientId),
       ]);
 
-      // Use value only if promise fulfilled
-      if (allergyRes.status === "fulfilled")
-        setAllergies(
-          Array.isArray(allergyRes.value.data) ? allergyRes.value.data : [],
-        );
-
-      if (historyRes.status === "fulfilled")
-        setHistory(
-          Array.isArray(historyRes.value.data) ? historyRes.value.data : [],
-        );
-
-      if (rxRes.status === "fulfilled")
-        setPrescriptions(
-          Array.isArray(rxRes.value.data) ? rxRes.value.data : [],
-        );
-
-      if (labRes.status === "fulfilled")
-        setLabReports(
-          Array.isArray(labRes.value.data) ? labRes.value.data : [],
-        );
+      if (allergyRes.status === "fulfilled") setAllergies(allergyRes.value.data || []);
+      if (historyRes.status === "fulfilled") setHistory(historyRes.value.data || []);
+      if (rxRes.status === "fulfilled") setPrescriptions(rxRes.value.data || []);
+      if (labRes.status === "fulfilled") setLabReports(labRes.value.data || []);
     } catch (err) {
-      console.error("Error loading patient data");
+      console.error("Failed to load patient data:", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [patientId]);
+
+  useEffect(() => {
+    if (patientId) {
+      fetchPatientData();
+    }
+  }, [patientId, fetchPatientData]);
+
+
   // Add medicine row
   const addMedicine = () => {
     setMedicines([

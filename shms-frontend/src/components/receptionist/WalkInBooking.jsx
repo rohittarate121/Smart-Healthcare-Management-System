@@ -61,7 +61,7 @@ const WalkInBooking = () => {
       const results = Array.isArray(res.data) ? res.data : [];
       setSearchResults(results);
       if (results.length === 0) {
-        setError("No patient found with that name, " + "phone or email.");
+        setError("No patient found with that name, phone or email.");
       }
     } catch (err) {
       setError("Search failed. Try again.");
@@ -141,7 +141,7 @@ const WalkInBooking = () => {
       const availSlots = Array.isArray(res.data) ? res.data : [];
       setSlots(availSlots);
       if (availSlots.length === 0) {
-        setError("No available slots. " + "Try a different date.");
+        setError("No available slots. Try a different date.");
       }
     } catch (err) {
       setError("Failed to load slots.");
