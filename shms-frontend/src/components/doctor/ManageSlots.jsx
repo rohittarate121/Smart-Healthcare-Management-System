@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import DoctorAPI from "../../api/doctorAPI";
 import API from "../../api/axiosConfig";
 
@@ -16,6 +17,7 @@ const ManageSlots = () => {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [filterDate, setFilterDate] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchMySlots();
@@ -24,13 +26,18 @@ const ManageSlots = () => {
   const fetchMySlots = async () => {
     setLoading(true);
     try {
-      // Get doctor's own slots — all slots
-      const res = await API.get("/api/appointments/doctor-schedule");
-      // Extract slots from appointments +
-      // fetch raw availability separately
       const slotsRes = await API.get("/api/doctors/my-slots");
       setSlots(Array.isArray(slotsRes.data) ? slotsRes.data : []);
     } catch (err) {
+      const message = err.response?.data?.message;
+      if (message?.toLowerCase().includes("doctor profile not found")) {
+        setError(
+          "Doctor profile not found. Please complete your doctor profile first.",
+        );
+        navigate("/doctor/profile");
+        return;
+      }
+
       // Fallback — try alternate endpoint
       try {
         const res = await API.get("/api/doctors/slots/my");
@@ -61,7 +68,15 @@ const ManageSlots = () => {
       fetchMySlots();
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to add slot.");
+      const message = err.response?.data?.message;
+      if (message?.toLowerCase().includes("doctor profile not found")) {
+        setError(
+          "Doctor profile not found. Please complete your doctor profile first.",
+        );
+        navigate("/doctor/profile");
+      } else {
+        setError(message || "Failed to add slot.");
+      }
     } finally {
       setSaving(false);
     }

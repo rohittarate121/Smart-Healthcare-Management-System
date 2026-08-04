@@ -17,6 +17,25 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // ── Handle missing doctor profile explicitly ─────────────────────────
+    @ExceptionHandler(com.shms.exception.DoctorProfileNotFoundException.class)
+    public ResponseEntity<ApiError> handleDoctorProfileNotFound(
+            com.shms.exception.DoctorProfileNotFoundException ex,
+            HttpServletRequest request) {
+
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Bad Request")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(error);
+    }
+
     // ── Handle RuntimeException ───────────────────────────────────────────
     // This catches: "Slot not available", "Doctor not found" etc.
     @ExceptionHandler(RuntimeException.class)

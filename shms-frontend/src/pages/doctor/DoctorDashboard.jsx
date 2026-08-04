@@ -6,12 +6,18 @@ import DoctorHome from "../../components/doctor/DoctorHome";
 import DoctorSchedule from "../../components/doctor/DoctorSchedule";
 import PatientConsultation from "../../components/doctor/PatientConsultation";
 import ManageSlots from "../../components/doctor/ManageSlots";
+import DoctorProfilePage from "./DoctorProfilePage";
 
 const sidebarItems = [
   {
     path: "/doctor",
     icon: "🏠",
     label: "Dashboard",
+  },
+  {
+    path: "/doctor/profile",
+    icon: "👤",
+    label: "Profile",
   },
   {
     path: "/doctor/schedule",
@@ -41,6 +47,7 @@ const DoctorDashboard = () => {
           <Routes>
             <Route index element={<DoctorHome />} />
             <Route path="schedule" element={<DoctorSchedule />} />
+            <Route path="profile" element={<DoctorProfilePage />} />
             <Route
               path="consultation/:apptId"
               element={<PatientConsultation />}

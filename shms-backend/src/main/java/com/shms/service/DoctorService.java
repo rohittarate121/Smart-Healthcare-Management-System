@@ -108,6 +108,6 @@ public class DoctorService {
     public Doctor getDoctorByUserId(Long userId) {
         return doctorRepository.findByUserUserId(userId)
                 .orElseThrow(() ->
-                    new RuntimeException("Doctor profile not found"));
+                    new com.shms.exception.DoctorProfileNotFoundException());
     }
 }
