@@ -4,12 +4,12 @@
 FROM maven:3.9.8-eclipse-temurin-21-alpine AS builder
 WORKDIR /app
 
-# Copy pom.xml and source code
-COPY pom.xml .
+# Copy pom.xml, settings.xml, and source code
+COPY pom.xml settings.xml ./
 COPY src ./src
 
-# Build package without running tests
-RUN mvn clean package -DskipTests
+# Build package using Google Maven Central mirror to bypass 429 rate limits
+RUN mvn clean package -s settings.xml -DskipTests
 
 # -----------------------------------------------------------------------------
 # Stage 2: Minimal Runtime stage using JRE 21
