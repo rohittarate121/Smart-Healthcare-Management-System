@@ -24,6 +24,12 @@ COPY --from=build /app/publish .
 ENV ASPNETCORE_URLS=http://+:${PORT:-8080}
 ENV ASPNETCORE_ENVIRONMENT=Production
 
+# Disable inotify file-system watchers — Render containers share a kernel
+# inotify limit (128). Without this, ASP.NET Core crashes on startup when
+# it tries to watch appsettings.json for live-reload.
+ENV DOTNET_USE_POLLING_FILE_WATCHER=1
+ENV DOTNET_hostBuilder__reloadConfigOnChange=false
+
 EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "SHMS.API.dll"]

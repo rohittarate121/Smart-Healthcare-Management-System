@@ -1,10 +1,20 @@
+using Microsoft.Extensions.Configuration;
 using shms_notification_service.Services;
 using shms_notification_service.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ── Disable file-system watchers (inotify) ────────────────────────────
+// Render's container hosts share a kernel inotify limit of 128 instances.
+// ASP.NET Core watches appsettings.json by default — disable to prevent crash.
+foreach (var source in builder.Configuration.Sources
+    .OfType<FileConfigurationSource>()
+    .ToList())
+{
+    source.ReloadOnChange = false;
+}
+
 // ── Bind to Render's dynamic PORT on 0.0.0.0 (not localhost) ──────────
-// Render assigns a PORT env var; ASPNETCORE_URLS must use http://+:PORT
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
