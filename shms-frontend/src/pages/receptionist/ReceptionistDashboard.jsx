@@ -5,6 +5,7 @@ import Sidebar from "../../components/common/Sidebar";
 import ReceptionHome from "../../components/receptionist/ReceptionHome";
 import WalkInBooking from "../../components/receptionist/WalkInBooking";
 import CheckInPatient from "../../components/receptionist/CheckInPatient";
+import BillingManagement from "../../components/receptionist/BillingManagement";
 
 const sidebarItems = [
   {
@@ -21,6 +22,11 @@ const sidebarItems = [
     path: "/receptionist/checkin",
     icon: "✅",
     label: "Patient Check-in",
+  },
+  {
+    path: "/receptionist/billing",
+    icon: "💳",
+    label: "Billing & Inpatients",
   },
 ];
 
@@ -41,6 +47,7 @@ const ReceptionistDashboard = () => {
             <Route index element={<ReceptionHome />} />
             <Route path="book" element={<WalkInBooking />} />
             <Route path="checkin" element={<CheckInPatient />} />
+            <Route path="billing" element={<BillingManagement />} />
             <Route path="*" element={<Navigate to="/receptionist" replace />} />
           </Routes>
         </div>

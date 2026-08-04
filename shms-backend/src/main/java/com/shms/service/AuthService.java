@@ -257,27 +257,38 @@ public class AuthService {
                     .build();
         }
 
-        // Generate login OTP
+        // Staff users (SUPER_ADMIN, ADMIN, DOCTOR, RECEPTIONIST, LAB_TECH) do not require OTP
+        if (user.getRole() != User.Role.PATIENT) {
+            user.setLastLogin(LocalDateTime.now());
+            userRepository.save(user);
+
+            String token = jwtUtil.generateToken(user);
+            return AuthResponse.builder()
+                    .success(true)
+                    .requiresOtp(false)
+                    .token(token)
+                    .role(user.getRole().name())
+                    .name(user.getName())
+                    .userId(user.getUserId())
+                    .message("Login successful.")
+                    .build();
+        }
+
+        // Generate login OTP for Patient
         String otp = generateOtp();
         user.setOtpCode(otp);
         user.setOtpExpiry(LocalDateTime.now().plusMinutes(10));
         userRepository.save(user);
 
-        // In production: send OTP via SMS using .NET service
-        // For now: print to console
         System.out.println("====================================");
         System.out.println("LOGIN OTP for " + request.getEmail() + " : " + otp);
         System.out.println("====================================");
-        
-     // With this:
+
         notificationClient.sendLoginOtp(user, otp);
 
-//        return AuthResponse.builder()
-//                .success(true)
-//                .message("Password verified. OTP sent to your phone. OTP: " + otp)
-//                .build();
         return AuthResponse.builder()
                 .success(true)
+                .requiresOtp(true)
                 .message("Password verified. OTP has been sent to your registered phone.")
                 .build();
     }

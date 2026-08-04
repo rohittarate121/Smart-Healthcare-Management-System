@@ -17,4 +17,5 @@ public class AuthResponse {
     private Long userId;
     private String message;
     private boolean success;
+    private boolean requiresOtp;
 }

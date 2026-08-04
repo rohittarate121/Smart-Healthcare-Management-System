@@ -38,8 +38,23 @@ const LoginPage = () => {
       const response = await AuthAPI.login(formData);
 
       if (response.data.success) {
-        setMessage(response.data.message);
-        setStep(2);
+        if (response.data.token) {
+          // Direct login for Staff roles (SUPER_ADMIN, ADMIN, DOCTOR, RECEPTIONIST, LAB_TECH)
+          login(
+            {
+              userId: response.data.userId,
+              name: response.data.name,
+              role: response.data.role,
+              email: formData.email,
+            },
+            response.data.token,
+          );
+          redirectByRole(response.data.role);
+        } else {
+          // OTP flow for Patients
+          setMessage(response.data.message);
+          setStep(2);
+        }
       } else {
         setError(response.data.message);
       }

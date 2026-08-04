@@ -277,16 +277,18 @@ public class SecurityConfig {
 
                 // ── ADMIN and SUPER_ADMIN ─────────────────────────────
                 .requestMatchers(
-                    "/api/admin/**",
-                    "/api/billing/admit",
-                    "/api/billing/admissions/**",
-                    "/api/billing/claims/**"
+                    "/api/admin/**"
                 ).hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                 // ── Staff creation — ADMIN and SUPER_ADMIN ────────────
                 .requestMatchers(
                     "/api/auth/admin/create-staff"
                 ).hasAnyRole("ADMIN", "SUPER_ADMIN")
+
+                // ── Billing Management & Operations ──────────────────
+                .requestMatchers(
+                    "/api/billing/**"
+                ).hasAnyRole("PATIENT", "DOCTOR", "RECEPTIONIST", "ADMIN", "SUPER_ADMIN")
 
                 // ── DOCTOR only ───────────────────────────────────────
                 .requestMatchers(

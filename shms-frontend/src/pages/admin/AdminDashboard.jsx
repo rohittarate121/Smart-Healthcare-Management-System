@@ -7,6 +7,7 @@ import ManageUsers from "../../components/admin/ManageUsers";
 import ManageClaims from "../../components/admin/ManageClaims";
 import ManageAdmissions from "../../components/admin/ManageAdmissions";
 import CreateStaff from "../../components/admin/CreateStaff";
+import BillingManagement from "../../components/receptionist/BillingManagement";
 
 const sidebarItems = [
   {
@@ -34,6 +35,11 @@ const sidebarItems = [
     icon: "🏥",
     label: "Admissions",
   },
+  {
+    path: "/admin/billing",
+    icon: "💳",
+    label: "Billing & Invoices",
+  },
 ];
 
 const AdminDashboard = () => {
@@ -55,6 +61,7 @@ const AdminDashboard = () => {
             <Route path="create-staff" element={<CreateStaff />} />
             <Route path="claims" element={<ManageClaims />} />
             <Route path="admissions" element={<ManageAdmissions />} />
+            <Route path="billing" element={<BillingManagement />} />
             <Route path="*" element={<Navigate to="/admin" replace />} />
           </Routes>
         </div>
