@@ -3,6 +3,11 @@ using shms_notification_service.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ── Bind to Render's dynamic PORT on 0.0.0.0 (not localhost) ──────────
+// Render assigns a PORT env var; ASPNETCORE_URLS must use http://+:PORT
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 // ── Read settings ─────────────────────────────────────────────────────
 var smtpSettings = new SmtpSettings();
 builder.Configuration.GetSection("Smtp")
@@ -36,4 +41,4 @@ var app = builder.Build();
 app.UseCors();
 app.MapControllers();
 
-app.Run();
+app.Run();

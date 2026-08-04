@@ -19,8 +19,11 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Render exposes PORT environment variable
-ENV ASPNETCORE_URLS=http://+:8080
+# Render dynamically assigns PORT — bind to 0.0.0.0 so the port scan succeeds
+# http://+:PORT means listen on ALL interfaces (0.0.0.0), not just localhost
+ENV ASPNETCORE_URLS=http://+:${PORT:-8080}
+ENV ASPNETCORE_ENVIRONMENT=Production
+
 EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "SHMS.API.dll"]
