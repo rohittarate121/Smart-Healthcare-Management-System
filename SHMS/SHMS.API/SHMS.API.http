@@ -1,0 +1,6 @@
+@SHMS.API_HostAddress = http://localhost:5029
+
+GET {{SHMS.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
