@@ -41,20 +41,21 @@ public class DataInitializer implements CommandLineRunner {
 //            userRepository.save(superAdmin);
 
         	User superAdmin = User.builder()
-        	        .name(superAdminProperties.getName())
-        	        .email(superAdminProperties.getEmail())
-        	        .phone(superAdminProperties.getPhone())
-        	        .passwordHash(
-        	            passwordEncoder.encode(
-        	                superAdminProperties.getPassword()
-        	            )
-        	        )
-        	        .role(User.Role.SUPER_ADMIN)
-        	        .isActive(true)
-        	        .isVerified(true)
-        	        .languagePref(superAdminProperties.getLanguage())
-        	        .build();
-        	
+			        .name(superAdminProperties.getName())
+			        .email(superAdminProperties.getEmail())
+			        .phone(superAdminProperties.getPhone())
+			        .passwordHash(
+			            passwordEncoder.encode(
+			                superAdminProperties.getPassword()
+			            )
+			        )
+			        .role(User.Role.SUPER_ADMIN)
+			        .isActive(true)
+			        .isVerified(true)
+			        .languagePref(superAdminProperties.getLanguage())
+			        .build();
+
+			userRepository.save(superAdmin);
         	
             System.out.println(
                 "====================================");

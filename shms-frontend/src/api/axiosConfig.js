@@ -26,9 +26,14 @@ API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem("shms_token");
-      localStorage.removeItem("shms_user");
-      window.location.href = "/login";
+      const url = error.config?.url || "";
+      const isAuthEndpoint = url.includes("/api/auth/");
+
+      if (!isAuthEndpoint) {
+        localStorage.removeItem("shms_token");
+        localStorage.removeItem("shms_user");
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   },

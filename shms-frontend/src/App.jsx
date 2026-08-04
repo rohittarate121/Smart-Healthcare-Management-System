@@ -14,7 +14,6 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 // Auth pages
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
-import VerifyOtpPage from "./pages/auth/VerifyOtpPage";
 import UnauthorizedPage from "./pages/auth/UnauthorizedPage";
 
 // Patient pages
@@ -46,10 +45,8 @@ function App() {
           {/* Public routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/verify-otp" element={<VerifyOtpPage />} />
-          <Route path="/unauthorized" element={<UnauthorizedPage />} />
-          // Add this inside public routes:
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
           {/* Patient routes */}
           <Route
             path="/patient/*"

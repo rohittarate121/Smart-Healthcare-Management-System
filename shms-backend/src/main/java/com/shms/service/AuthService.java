@@ -340,46 +340,19 @@ public class AuthService {
  // ── FORGOT PASSWORD — send reset OTP ─────────────────────────────────
     public AuthResponse forgotPassword(String email) {
 
-        Optional<User> optionalUser =
-                userRepository.findByEmail(email);
-
-        if (optionalUser.isEmpty()) {
-            // Do not reveal if email exists
-            return AuthResponse.builder()
-                    .success(true)
-                    .message(
-                        "If this email is registered, " +
-                        "a reset OTP has been sent.")
-                    .build();
-        }
-
-        User user = optionalUser.get();
-        String otp = generateOtp();
-        user.setOtpCode(otp);
-        user.setOtpExpiry(
-                LocalDateTime.now().plusMinutes(10));
-        userRepository.save(user);
-
-        // Send via .NET email service
-        notificationClient.sendPasswordResetOtp(
-                user, otp);
-
-        System.out.println(
-            "PASSWORD RESET OTP: " + otp +
-            " for " + email);
-
+        // We intentionally keep this endpoint safe and opaque.
+        // The actual reset password flow no longer requires OTP.
         return AuthResponse.builder()
                 .success(true)
                 .message(
-                    "Password reset OTP sent " +
-                    "to your email.")
+                    "If this email is registered, " +
+                    "password reset is available.")
                 .build();
     }
 
     // ── RESET PASSWORD ────────────────────────────────────────────────────
     public AuthResponse resetPassword(
             String email,
-            String otp,
             String newPassword) {
 
         Optional<User> optionalUser =
@@ -387,32 +360,15 @@ public class AuthService {
 
         if (optionalUser.isEmpty()) {
             return AuthResponse.builder()
-                    .success(false)
-                    .message("User not found.")
+                    .success(true)
+                    .message(
+                        "If this email is registered, " +
+                        "the password has been reset.")
                     .build();
         }
 
         User user = optionalUser.get();
 
-        if (user.getOtpCode() == null ||
-                !user.getOtpCode().equals(otp)) {
-            return AuthResponse.builder()
-                    .success(false)
-                    .message("Invalid OTP.")
-                    .build();
-        }
-
-        if (LocalDateTime.now()
-                .isAfter(user.getOtpExpiry())) {
-            return AuthResponse.builder()
-                    .success(false)
-                    .message(
-                        "OTP expired. " +
-                        "Request a new one.")
-                    .build();
-        }
-
-        // Update password
         user.setPasswordHash(
                 passwordEncoder.encode(newPassword));
         user.setOtpCode(null);

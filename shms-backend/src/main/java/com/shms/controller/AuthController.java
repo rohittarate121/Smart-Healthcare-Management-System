@@ -214,7 +214,6 @@ public class AuthController {
         AuthResponse response =
                 authService.resetPassword(
                     request.getEmail(),
-                    request.getOtp(),
                     request.getNewPassword());
 
         if (!response.isSuccess()) {
