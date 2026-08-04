@@ -132,10 +132,7 @@ public class AuthService {
                     .build();
         }
 
-        // Generate OTP for email verification
-        String otp = generateOtp();
-
-        // Build and save new user
+        // Build and save new user — auto-verified (no OTP required)
         User user = User.builder()
         		 .name(request.getName())
         	        .email(request.getEmail())
@@ -144,26 +141,19 @@ public class AuthService {
         	                request.getPassword()))
         	        .role(User.Role.PATIENT) // Always PATIENT — never from client
         	        .isActive(true)
-        	        .isVerified(false)
-        	        .otpCode(otp)
-        	        .otpExpiry(LocalDateTime.now().plusMinutes(10))
+        	        .isVerified(true) // Auto-verified — OTP removed
         	        .languagePref(request.getLanguagePref())
         	        .build();
 
         userRepository.save(user);
 
-        // In production: send OTP via email using .NET service
-        // For now: print OTP to console for testing
-//        System.out.println("====================================");
-//        System.out.println("OTP for " + request.getEmail() + " : " + otp);
-//        System.out.println("====================================");
-        
-     // With this:
-        notificationClient.sendRegistrationOtp(user, otp);
-        
+        System.out.println("====================================");
+        System.out.println("NEW PATIENT REGISTERED: " + request.getEmail());
+        System.out.println("====================================");
+
         return AuthResponse.builder()
                 .success(true)
-                .message("Registration successful. OTP has been sent to your email.")
+                .message("Registration successful. You can now login.")
                 .build();
     }
 
@@ -274,22 +264,19 @@ public class AuthService {
                     .build();
         }
 
-        // Generate login OTP for Patient
-        String otp = generateOtp();
-        user.setOtpCode(otp);
-        user.setOtpExpiry(LocalDateTime.now().plusMinutes(10));
+        // Patient — direct login, no OTP
+        user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
 
-        System.out.println("====================================");
-        System.out.println("LOGIN OTP for " + request.getEmail() + " : " + otp);
-        System.out.println("====================================");
-
-        notificationClient.sendLoginOtp(user, otp);
-
+        String token = jwtUtil.generateToken(user);
         return AuthResponse.builder()
                 .success(true)
-                .requiresOtp(true)
-                .message("Password verified. OTP has been sent to your registered phone.")
+                .requiresOtp(false)
+                .token(token)
+                .role(user.getRole().name())
+                .name(user.getName())
+                .userId(user.getUserId())
+                .message("Login successful.")
                 .build();
     }
 

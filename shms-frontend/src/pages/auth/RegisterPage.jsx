@@ -5,7 +5,6 @@ import AuthAPI from "../../api/authAPI";
 const RegisterPage = () => {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,10 +13,9 @@ const RegisterPage = () => {
     confirmPassword: "",
   });
 
-  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -46,7 +44,7 @@ const RegisterPage = () => {
     return null;
   };
 
-  // Step 1 — Register
+  // Register — auto-verified, go straight to login
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -73,8 +71,12 @@ const RegisterPage = () => {
       });
 
       if (response.data.success) {
-        setMessage(response.data.message);
-        setStep(2);
+        setSuccess(response.data.message);
+        setTimeout(() => {
+          navigate("/login", {
+            state: { message: "Registration successful. Please login." },
+          });
+        }, 1500);
       } else {
         setError(response.data.message);
       }
@@ -82,34 +84,6 @@ const RegisterPage = () => {
       setError(
         err.response?.data?.message || "Registration failed. Please try again.",
       );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Step 2 — Verify OTP
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await AuthAPI.verifyOtp({
-        email: formData.email,
-        otp: otp,
-      });
-
-      if (response.data.success) {
-        navigate("/login", {
-          state: {
-            message: "Registration complete. Please login.",
-          },
-        });
-      } else {
-        setError(response.data.message);
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || "OTP verification failed.");
     } finally {
       setLoading(false);
     }
@@ -131,132 +105,97 @@ const RegisterPage = () => {
         </div>
 
         {error && <div className="alert alert-danger py-2">{error}</div>}
+        {success && <div className="alert alert-success py-2">{success}</div>}
 
-        {/* Step 1 — Registration Form */}
-        {step === 1 && (
-          <form onSubmit={handleRegister}>
-            <h5 className="mb-3">Create Account</h5>
+        <form onSubmit={handleRegister}>
+          <h5 className="mb-3">Create Account</h5>
 
-            <div className="mb-2">
-              <label className="form-label">Full Name</label>
-              <input
-                type="text"
-                name="name"
-                className="form-control"
-                placeholder="Enter full name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
+          <div className="mb-2">
+            <label className="form-label">Full Name</label>
+            <input
+              type="text"
+              name="name"
+              className="form-control"
+              placeholder="Enter full name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="mb-2">
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              name="email"
+              className="form-control"
+              placeholder="Enter email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="mb-2">
+            <label className="form-label">Phone (10 digits)</label>
+            <input
+              type="tel"
+              name="phone"
+              className="form-control"
+              placeholder="Enter 10-digit phone"
+              value={formData.phone}
+              onChange={handleChange}
+              maxLength={10}
+              required
+            />
+          </div>
+
+          <div className="mb-2">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              className="form-control"
+              placeholder="Minimum 8 characters"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+            <div className="form-text text-muted" style={{ fontSize: "0.75rem" }}>
+              Must contain 8+ characters, 1 uppercase, 1 lowercase, 1 number &amp; 1 special character.
             </div>
+          </div>
 
-            <div className="mb-2">
-              <label className="form-label">Email</label>
-              <input
-                type="email"
-                name="email"
-                className="form-control"
-                placeholder="Enter email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          <div className="mb-3">
+            <label className="form-label">Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              className="form-control"
+              placeholder="Repeat password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-            <div className="mb-2">
-              <label className="form-label">Phone (10 digits)</label>
-              <input
-                type="tel"
-                name="phone"
-                className="form-control"
-                placeholder="Enter 10-digit phone"
-                value={formData.phone}
-                onChange={handleChange}
-                maxLength={10}
-                required
-              />
-            </div>
+          <button
+            type="submit"
+            className="btn btn-primary w-100"
+            disabled={loading}
+          >
+            {loading ? "Registering..." : "Register"}
+          </button>
 
-            <div className="mb-2">
-              <label className="form-label">Password</label>
-              <input
-                type="password"
-                name="password"
-                className="form-control"
-                placeholder="Minimum 8 characters"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-              <div className="form-text text-muted" style={{ fontSize: "0.75rem" }}>
-                Must contain 8+ characters, 1 uppercase, 1 lowercase, 1 number & 1 special character.
-              </div>
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Confirm Password</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                className="form-control"
-                placeholder="Repeat password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="btn btn-primary w-100"
-              disabled={loading}
-            >
-              {loading ? "Registering..." : "Register"}
-            </button>
-
-            <div className="text-center mt-3">
-              <span className="text-muted small">
-                Already have an account?{" "}
-              </span>
-              <Link to="/login" className="small">
-                Login
-              </Link>
-            </div>
-          </form>
-        )}
-
-        {/* Step 2 — OTP Verification */}
-        {step === 2 && (
-          <form onSubmit={handleVerifyOtp}>
-            <h5 className="mb-1">Verify Email</h5>
-            <p className="text-muted small mb-3">{message}</p>
-
-            <div className="mb-3">
-              <label className="form-label">Enter OTP</label>
-              <input
-                type="text"
-                className="form-control form-control-lg
-                  text-center fw-bold"
-                placeholder="6-digit OTP"
-                value={otp}
-                onChange={(e) => {
-                  setOtp(e.target.value);
-                  setError("");
-                }}
-                maxLength={6}
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="btn btn-success w-100"
-              disabled={loading}
-            >
-              {loading ? "Verifying..." : "Verify & Complete"}
-            </button>
-          </form>
-        )}
+          <div className="text-center mt-3">
+            <span className="text-muted small">
+              Already have an account?{" "}
+            </span>
+            <Link to="/login" className="small">
+              Login
+            </Link>
+          </div>
+        </form>
       </div>
     </div>
   );
