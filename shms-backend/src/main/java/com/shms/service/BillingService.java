@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -218,7 +219,7 @@ public class BillingService {
                 .registrationNumber(admission.getPatient().getRegistrationNumber())
                 .doctorName(admission.getDoctor() != null ? admission.getDoctor().getUser().getName() : "N/A")
                 .bedNumber(bed != null ? bed.getBedNumber() : "N/A")
-                .wardName(bed != null && bed.getWard() != null ? bed.getWard().getWardName() : "General")
+                .wardName(bed != null && bed.getWard() != null ? bed.getWard().getName() : "General")
                 .admittedAt(admission.getAdmittedAt())
                 .daysAdmitted(daysAdmitted)
                 .dailyRoomCharge(dailyRoomRate)
@@ -482,8 +483,8 @@ public class BillingService {
                 .patient(savedInvoice.getPatient())
                 .admission(savedInvoice.getAdmission())
                 .amount(request.getAmount())
-                .paymentType(Payment.PaymentType.ADMISSION_BILL)
-                .paymentMethod(request.getPaymentMethod().name())
+                .paymentType(Payment.PaymentType.OTHER)
+                .paymentMethod(Payment.PaymentMethod.valueOf(request.getPaymentMethod().name()))
                 .status(Payment.PaymentStatus.SUCCESS)
                 .transactionRef(txnRef)
                 .paidAt(LocalDateTime.now())
@@ -673,9 +674,9 @@ public class BillingService {
                 .doctorName(admission != null && admission.getDoctor() != null && admission.getDoctor().getUser() != null ?
                         admission.getDoctor().getUser().getName() : "N/A")
                 .departmentName(admission != null && admission.getDoctor() != null && admission.getDoctor().getDepartment() != null ?
-                        admission.getDoctor().getDepartment().getDepartmentName() : "General Medicine")
+                        admission.getDoctor().getDepartment().getName() : "General Medicine")
                 .bedNumber(bed != null ? bed.getBedNumber() : "N/A")
-                .wardName(bed != null && bed.getWard() != null ? bed.getWard().getWardName() : "Standard")
+                .wardName(bed != null && bed.getWard() != null ? bed.getWard().getName() : "Standard")
                 .admissionDate(admission != null ? admission.getAdmittedAt() : null)
                 .dischargeDate(admission != null ? admission.getDischargedAt() : null)
                 .invoiceDate(inv.getGeneratedAt())
