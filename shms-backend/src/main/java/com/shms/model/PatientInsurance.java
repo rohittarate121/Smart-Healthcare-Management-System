@@ -47,6 +47,9 @@ public class PatientInsurance {
     @Column(name = "coverage_type", length = 200)
     private String coverageType;
 
+    @Column(name = "insurance_type", length = 200)
+    private String insuranceType;
+
     @Column(name = "is_active")
     private Boolean isActive = true;
 }

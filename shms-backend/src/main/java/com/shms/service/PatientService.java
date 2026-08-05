@@ -186,6 +186,7 @@ public class PatientService {
                 .validFrom(request.getValidFrom())
                 .validUntil(request.getValidUntil())
                 .coverageType(request.getCoverageType())
+                .insuranceType(request.getInsuranceType())
                 .isActive(true)
                 .build();
 

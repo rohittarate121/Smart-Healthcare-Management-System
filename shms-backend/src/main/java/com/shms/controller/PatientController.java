@@ -104,7 +104,7 @@ public class PatientController {
     @PostMapping("/insurance")
     public ResponseEntity<PatientInsurance> addInsurance(
             HttpServletRequest request,
-            @RequestBody InsuranceRequest insuranceRequest) {
+            @jakarta.validation.Valid @RequestBody InsuranceRequest insuranceRequest) {
         Long userId = getUserIdFromRequest(request);
         PatientInsurance insurance =
                 patientService.addInsurance(userId, insuranceRequest);
