@@ -14,6 +14,11 @@ const DoctorAPI = {
 
   addSlot: (data) => API.post("/api/doctors/slots", data),
 
+  cancelAppointment: (apptId, reason) =>
+    API.put(`/api/appointments/${apptId}/cancel`, null, { params: { reason } }),
+
+  getProfile: () => API.get("/api/doctors/profile"),
+
   getPatientAllergies: (patientId) =>
     API.get(`/api/patients/${patientId}/allergies`),
 
