@@ -66,38 +66,58 @@ public class PatientService {
 //        return patientRepository.save(patient);
 //    }
     
+    @org.springframework.transaction.annotation.Transactional
     public Patient updateProfile(
             Long userId,
-			PatientProfileRequest request) {
+            PatientProfileRequest request) {
 
-		Patient patient = getOrCreatePatient(userId);
+        Patient patient = getOrCreatePatient(userId);
+        User user = patient.getUser();
 
-		if (request.getDateOfBirth() != null)
-			patient.setDateOfBirth(request.getDateOfBirth());
+        if (request.getName() != null && !request.getName().trim().isEmpty()) {
+            user.setName(request.getName().trim());
+        }
 
-		if (request.getGender() != null)
-			patient.setGender(request.getGender());
+        if (request.getPhone() != null && !request.getPhone().trim().isEmpty()) {
+            String newPhone = request.getPhone().trim();
+            if (!newPhone.equals(user.getPhone())) {
+                userRepository.findByPhone(newPhone).ifPresent(u -> {
+                    if (!u.getUserId().equals(userId)) {
+                        throw new RuntimeException("Mobile number is already registered with another account");
+                    }
+                });
+                user.setPhone(newPhone);
+            }
+        }
+        userRepository.save(user);
 
-		if (request.getBloodGroup() != null)
-			patient.setBloodGroup(request.getBloodGroup());
+        if (request.getDateOfBirth() != null)
+            patient.setDateOfBirth(request.getDateOfBirth());
 
-		if (request.getAddress() != null)
-			patient.setAddress(request.getAddress());
+        if (request.getGender() != null)
+            patient.setGender(request.getGender());
 
-		if (request.getCity() != null)
-			patient.setCity(request.getCity());
+        if (request.getBloodGroup() != null)
+            patient.setBloodGroup(request.getBloodGroup());
 
-		if (request.getPincode() != null)
-			patient.setPincode(request.getPincode());
+        if (request.getAddress() != null)
+            patient.setAddress(request.getAddress());
 
-		if (request.getEmergencyContactName() != null)
-			patient.setEmergencyContactName(request.getEmergencyContactName());
+        if (request.getCity() != null)
+            patient.setCity(request.getCity());
 
-		if (request.getEmergencyContactPhone() != null)
-			patient.setEmergencyContactPhone(request.getEmergencyContactPhone());
+        if (request.getPincode() != null)
+            patient.setPincode(request.getPincode());
 
-		return patientRepository.save(patient);
-	}
+        if (request.getEmergencyContactName() != null)
+            patient.setEmergencyContactName(request.getEmergencyContactName());
+
+        if (request.getEmergencyContactPhone() != null)
+            patient.setEmergencyContactPhone(request.getEmergencyContactPhone());
+
+        return patientRepository.save(patient);
+    }
+
 
     // ── GET PATIENT PROFILE ───────────────────────────────────────────────
     public Patient getProfile(Long userId) {

@@ -52,7 +52,7 @@ public class PatientController {
     @PutMapping("/profile")
     public ResponseEntity<Patient> updateProfile(
             HttpServletRequest request,
-            @RequestBody PatientProfileRequest profileRequest) {
+            @jakarta.validation.Valid @RequestBody PatientProfileRequest profileRequest) {
         Long userId = getUserIdFromRequest(request);
         Patient patient = patientService.updateProfile(userId, profileRequest);
         return ResponseEntity.ok(patient);
